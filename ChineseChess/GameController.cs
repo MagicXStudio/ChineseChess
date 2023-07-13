@@ -4,69 +4,73 @@ namespace ChineseChess
 {
     public class GameController
     {
-        private const int RowSum = 10;  //行总数
-        private const int ColSum = 9;   //列总数
-        private int[][] chessMan;   //代表着全场象棋的数组
-        private bool[][] avalChess; //选择棋子时的可选表
-        private int[][] moveHelper; //移动棋子时的提示表
-        private bool whosTurn;
+        public const int Rows = 10;  //行总数
+        public const int Columns = 9;   //列总数
+        private int[][] Pieces { get; set; }   //代表着全场象棋的数组
+        private bool[][] avalChess { get; set; } //选择棋子时的可选表
+        private int[][] Tips { get; set; } //移动棋子时的提示表
+        private bool whosTurn { get; set; }
+
+
         private const int minX = 0, minY = 0, maxX = 8, maxY = 9;
 
         public GameController()
         {
-            //申请空间
-            chessMan = new int[RowSum][];
-            avalChess = new bool[RowSum][];
-            moveHelper = new int[RowSum][];
-            for (int i = 0; i < RowSum; ++i)
+            Pieces = new int[Rows][];
+            avalChess = new bool[Rows][];
+            Tips = new int[Rows][];
+            for (int i = 0; i < Rows; ++i)
             {
-                chessMan[i] = new int[ColSum];
-                avalChess[i] = new bool[ColSum];
-                moveHelper[i] = new int[ColSum];
+                Pieces[i] = new int[Columns];
+                avalChess[i] = new bool[Columns];
+                Tips[i] = new int[Columns];
             }
         }
 
+        /// <summary>
+        /// 初始化棋盘
+        /// </summary>
         public void Reset()
         {
-            //初始化棋盘
-            for (int i = 0; i < chessMan.Length; ++i)
-                for (int j = 0; j < chessMan[i].Length; ++j)
-                    switch (i * chessMan[i].Length + j)
+            for (int i = 0; i < Pieces.Length; ++i)
+                for (int j = 0; j < Pieces[i].Length; ++j)
+                    switch (i * Pieces[i].Length + j)
                     {
-                        case 0: chessMan[i][j] = -6; break;
-                        case 89: chessMan[i][j] = 6; break;
-                        case 1: chessMan[i][j] = -7; break;
-                        case 88: chessMan[i][j] = 7; break;
-                        case 2: chessMan[i][j] = -5; break;
-                        case 87: chessMan[i][j] = 5; break;
-                        case 3: chessMan[i][j] = -3; break;
-                        case 86: chessMan[i][j] = 3; break;
-                        case 4: chessMan[i][j] = -1; break;
-                        case 85: chessMan[i][j] = 1; break;
-                        case 5: chessMan[i][j] = -3; break;
-                        case 84: chessMan[i][j] = 3; break;
-                        case 6: chessMan[i][j] = -5; break;
-                        case 83: chessMan[i][j] = 5; break;
-                        case 7: chessMan[i][j] = -7; break;
-                        case 82: chessMan[i][j] = 7; break;
-                        case 8: chessMan[i][j] = -6; break;
-                        case 81: chessMan[i][j] = 6; break;
-                        case 25: chessMan[i][j] = -4; break;
-                        case 70: chessMan[i][j] = 4; break;
-                        case 19: chessMan[i][j] = -4; break;
-                        case 64: chessMan[i][j] = 4; break;
-                        case 27: chessMan[i][j] = -2; break;
-                        case 62: chessMan[i][j] = 2; break;
-                        case 29: chessMan[i][j] = -2; break;
-                        case 60: chessMan[i][j] = 2; break;
-                        case 31: chessMan[i][j] = -2; break;
-                        case 58: chessMan[i][j] = 2; break;
-                        case 33: chessMan[i][j] = -2; break;
-                        case 56: chessMan[i][j] = 2; break;
-                        case 35: chessMan[i][j] = -2; break;
-                        case 54: chessMan[i][j] = 2; break;
-                        default: chessMan[i][j] = 0; break;
+                        case 0: Pieces[i][j] = -6; break;
+                        case 89: Pieces[i][j] = 6; break;
+                        case 1: Pieces[i][j] = -7; break;
+                        case 88: Pieces[i][j] = 7; break;
+                        case 2: Pieces[i][j] = -5; break;
+                        case 87: Pieces[i][j] = 5; break;
+                        case 3: Pieces[i][j] = -3; break;
+                        case 86: Pieces[i][j] = 3; break;
+                        case 4: Pieces[i][j] = -1; break;
+                        case 85: Pieces[i][j] = 1; break;
+                        case 5: Pieces[i][j] = -3; break;
+                        case 84: Pieces[i][j] = 3; break;
+                        case 6: Pieces[i][j] = -5; break;
+                        case 83: Pieces[i][j] = 5; break;
+                        case 7: Pieces[i][j] = -7; break;
+                        case 82: Pieces[i][j] = 7; break;
+                        case 8: Pieces[i][j] = -6; break;
+                        case 81: Pieces[i][j] = 6; break;
+                        case 25: Pieces[i][j] = -4; break;
+                        case 70: Pieces[i][j] = 4; break;
+                        case 19: Pieces[i][j] = -4; break;
+                        case 64: Pieces[i][j] = 4; break;
+                        case 27: Pieces[i][j] = -2; break;
+                        case 62: Pieces[i][j] = 2; break;
+                        case 29: Pieces[i][j] = -2; break;
+                        case 60: Pieces[i][j] = 2; break;
+                        case 31: Pieces[i][j] = -2; break;
+                        case 58: Pieces[i][j] = 2; break;
+                        case 33: Pieces[i][j] = -2; break;
+                        case 56: Pieces[i][j] = 2; break;
+                        case 35: Pieces[i][j] = -2; break;
+                        case 54: Pieces[i][j] = 2; break;
+                        default: Pieces[i][j] = 0; break;
                     }
+            System.Diagnostics.Debug.WriteLine(Pieces);
             //初始化先手和可选棋表
             whosTurn = true;
             TransTurn();
@@ -75,7 +79,7 @@ namespace ChineseChess
         //获取棋子
         public int GetChessman(int i, int j)
         {
-            return chessMan[i][j];
+            return Pieces[i][j];
         }
 
         //获取可移动状态
@@ -87,32 +91,32 @@ namespace ChineseChess
         //获取移动目标状态
         public int GetMoveHelper(int i, int j)
         {
-            return moveHelper[i][j];
+            return Tips[i][j];
         }
 
         //设置可移动状态，己方棋子及自身=3，可选敌方棋子=1，可选空位=2，不可选棋子0
         public void SetMoveHelper(int i, int j)
         {
-            for (int a = 0; a < RowSum; ++a)
+            for (int a = 0; a < Rows; ++a)
             {
-                for (int b = 0; b < ColSum; ++b)
+                for (int b = 0; b < Columns; ++b)
                 {
                     if (i == -1 && j == -1)
                     {
-                        moveHelper[a][b] = -1;
+                        Tips[a][b] = -1;
                         continue;
                     }
                     if (GetChessman(a, b) * GetChessman(i, j) > 0)
-                        moveHelper[a][b] = -1;
+                        Tips[a][b] = -1;
                     else if (CanMove(i, j, a, b) == true)
                     {
                         if (GetChessman(a, b) == 0)
-                            moveHelper[a][b] = 2;
+                            Tips[a][b] = 2;
                         else
-                            moveHelper[a][b] = 1;
+                            Tips[a][b] = 1;
                     }
                     else
-                        moveHelper[a][b] = 0;
+                        Tips[a][b] = 0;
                 }
             }
         }
@@ -120,7 +124,7 @@ namespace ChineseChess
         //游戏结束判断
         public bool IsGameOver(int i, int j)
         {
-            if (Math.Abs(chessMan[i][j]) == 1)
+            if (Math.Abs(Pieces[i][j]) == 1)
                 return true;
             return false;
         }
@@ -146,7 +150,7 @@ namespace ChineseChess
                 int maxer = Math.Max(oldj, j);
                 int miner = Math.Min(oldj, j);
                 for (int loop = miner + 1; loop < maxer; ++loop)
-                    if (chessMan[i][loop] != 0)
+                    if (Pieces[i][loop] != 0)
                         count++;
             }
             else if (j == oldj)
@@ -154,7 +158,7 @@ namespace ChineseChess
                 int maxer = Math.Max(oldi, i);
                 int miner = Math.Min(oldi, i);
                 for (int loop = miner + 1; loop < maxer; ++loop)
-                    if (chessMan[loop][j] != 0)
+                    if (Pieces[loop][j] != 0)
                         count++;
             }
             return count;
@@ -167,17 +171,17 @@ namespace ChineseChess
             if (i < minY || i > maxY || j < minX || j > maxX)
                 return false;
             //是否移动到本方棋子上
-            if ((chessMan[i][j] > 0 && chessMan[oldi][oldj] > 0) || (chessMan[i][j] < 0 && chessMan[oldi][oldj] < 0))
+            if ((Pieces[i][j] > 0 && Pieces[oldi][oldj] > 0) || (Pieces[i][j] < 0 && Pieces[oldi][oldj] < 0))
                 return false;
             //是否满足特定棋子的规律
-            int type = chessMan[oldi][oldj];
+            int type = Pieces[oldi][oldj];
             switch (Math.Abs(type))
             {
                 case 0: return false;
                 //帅/将 必须在九宫格内，每次只能移动一步，或者移动到对方的将
                 case 1:
                     //移动到对方的将，且中间没有阻挡
-                    if (chessMan[i][j] == -chessMan[oldi][oldj] && GetChessmanCountInPath(oldi, oldj, i, j) == 0)
+                    if (Pieces[i][j] == -Pieces[oldi][oldj] && GetChessmanCountInPath(oldi, oldj, i, j) == 0)
                         return true;
                     //目标仅移动一步
                     if (Math.Abs(i - oldi) + Math.Abs(j - oldj) != 1)
@@ -232,13 +236,13 @@ namespace ChineseChess
                     if (!(Math.Abs(i - oldi) == 2 && Math.Abs(j - oldj) == 2))
                         return false;
                     //不可被卡位
-                    if (i > oldi && j > oldj && chessMan[oldi + 1][oldj + 1] == 0)
+                    if (i > oldi && j > oldj && Pieces[oldi + 1][oldj + 1] == 0)
                         return true;
-                    if (i > oldi && j < oldj && chessMan[oldi + 1][oldj - 1] == 0)
+                    if (i > oldi && j < oldj && Pieces[oldi + 1][oldj - 1] == 0)
                         return true;
-                    if (i < oldi && j > oldj && chessMan[oldi - 1][oldj + 1] == 0)
+                    if (i < oldi && j > oldj && Pieces[oldi - 1][oldj + 1] == 0)
                         return true;
-                    if (i < oldi && j < oldj && chessMan[oldi - 1][oldj - 1] == 0)
+                    if (i < oldi && j < oldj && Pieces[oldi - 1][oldj - 1] == 0)
                         return true;
                     break;
                 //车/车 仅可直线移动，且路径中不能有棋子
@@ -258,24 +262,24 @@ namespace ChineseChess
                     //不能被卡位
                     if (Math.Abs(i - oldi) == 2)
                     {
-                        if (i > oldi && j > oldj && chessMan[oldi + 1][oldj] == 0)
+                        if (i > oldi && j > oldj && Pieces[oldi + 1][oldj] == 0)
                             return true;
-                        if (i > oldi && j < oldj && chessMan[oldi + 1][oldj] == 0)
+                        if (i > oldi && j < oldj && Pieces[oldi + 1][oldj] == 0)
                             return true;
-                        if (i < oldi && j > oldj && chessMan[oldi - 1][oldj] == 0)
+                        if (i < oldi && j > oldj && Pieces[oldi - 1][oldj] == 0)
                             return true;
-                        if (i < oldi && j < oldj && chessMan[oldi - 1][oldj] == 0)
+                        if (i < oldi && j < oldj && Pieces[oldi - 1][oldj] == 0)
                             return true;
                     }
                     else if (Math.Abs(j - oldj) == 2)
                     {
-                        if (i > oldi && j > oldj && chessMan[oldi][oldj + 1] == 0)
+                        if (i > oldi && j > oldj && Pieces[oldi][oldj + 1] == 0)
                             return true;
-                        if (i > oldi && j < oldj && chessMan[oldi][oldj - 1] == 0)
+                        if (i > oldi && j < oldj && Pieces[oldi][oldj - 1] == 0)
                             return true;
-                        if (i < oldi && j > oldj && chessMan[oldi][oldj + 1] == 0)
+                        if (i < oldi && j > oldj && Pieces[oldi][oldj + 1] == 0)
                             return true;
-                        if (i < oldi && j < oldj && chessMan[oldi][oldj - 1] == 0)
+                        if (i < oldi && j < oldj && Pieces[oldi][oldj - 1] == 0)
                             return true;
                     }
                     break;
@@ -288,16 +292,16 @@ namespace ChineseChess
         //还原棋子
         public void ResetChessman(int oldi, int oldj, int i, int j, int oldValue, int value)
         {
-            chessMan[i][j] = value;
-            chessMan[oldi][oldj] = oldValue;
+            Pieces[i][j] = value;
+            Pieces[oldi][oldj] = oldValue;
             TransTurn();
         }
 
         //移动棋子
         public void SetChessman(int oldi, int oldj, int i, int j)
         {
-            chessMan[i][j] = chessMan[oldi][oldj];
-            chessMan[oldi][oldj] = 0;
+            Pieces[i][j] = Pieces[oldi][oldj];
+            Pieces[oldi][oldj] = 0;
             TransTurn();
         }
 
@@ -313,12 +317,11 @@ namespace ChineseChess
             whosTurn = !whosTurn;
             for (int i = 0; i < avalChess.Length; ++i)
                 for (int j = 0; j < avalChess[i].Length; ++j)
-                    if (chessMan[i][j] < 0 && whosTurn == false)
+                    if (Pieces[i][j] < 0 && whosTurn == false)
                         avalChess[i][j] = true;
-                    else if (chessMan[i][j] > 0 && whosTurn == true)
+                    else if (Pieces[i][j] > 0 && whosTurn == true)
                         avalChess[i][j] = true;
                     else avalChess[i][j] = false;
         }
-
     }
 }

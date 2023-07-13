@@ -9,11 +9,7 @@ namespace ChineseChess
     public partial class MainForm : Form
     {
         private GameController gameController { get; set; }
-
         private Dictionary<int, Image> PieceImagePair { get; set; }  //储存int-Image的对应
-
-        private const int RowSum = 10;  //行总数
-        private const int ColSum = 9;   //列总数
 
         private int[] LastStep { get; set; } //记录上一步的动作，用于撤销操作
 
@@ -24,7 +20,6 @@ namespace ChineseChess
         private System.Timers.Timer flickerTimer { get; set; }  //定时器，用于闪动效果的实现
 
         private int[][] moveHelper { get; set; } //用于储存当前选定的棋子可接触、攻击、移动到的新位置状态
-
 
         public MainForm()
         {
@@ -43,20 +38,15 @@ namespace ChineseChess
             if (this.panelChessman.Controls.Count == 0)
             {
                 //如果没有生成过棋盘PictureBox，那么生成10 * 9个
-                for (int j = 0; j < RowSum; ++j)
+                for (int j = 0; j < GameController.Rows; ++j)
                 {
-                    for (int i = 0; i < ColSum; ++i)
+                    for (int i = 0; i < GameController.Columns; ++i)
                     {
                         ChessPiece pictureBox = new ChessPiece();
                         pictureBox.Size = new Size(70, 70);
-                        if (j < 5)
-                        {
-                            pictureBox.Location = new Point(i * 83, 10 + (j * 83));
-                        }
-                        else if (j >= 5)
-                        {
-                            pictureBox.Location = new Point(i * 83, 15 + (j * 83));
-                        }
+                        Point location = j < 5 ? new Point(i * 83, 10 + (j * 83)) : new Point(i * 83, 15 + (j * 83));
+                        System.Diagnostics.Debug.WriteLine(location);
+                        pictureBox.Location = location;
                         pictureBox.Parent = panelChessman;
                         pictureBox.BackColor = Color.Transparent;
                         pictureBox.Click += new EventHandler(ClickChessEvent);
@@ -66,22 +56,29 @@ namespace ChineseChess
                     }
                 }
 
-
                 flickerTimer.Elapsed += new ElapsedEventHandler(TimerPictureBoxFlicker);
                 flickerTimer.Interval = 500;
                 flickerTimer.AutoReset = true;
 
                 //添加编号和Image对应的字典
                 PieceImagePair = new Dictionary<int, Image>();
-                PieceImagePair.Add(-7, Properties.Resources.enemy7); PieceImagePair.Add(7, Properties.Resources.friend7);
-                PieceImagePair.Add(-6, Properties.Resources.enemy6); PieceImagePair.Add(6, Properties.Resources.friend6);
-                PieceImagePair.Add(-5, Properties.Resources.enemy5); PieceImagePair.Add(5, Properties.Resources.friend5);
-                PieceImagePair.Add(-4, Properties.Resources.enemy4); PieceImagePair.Add(4, Properties.Resources.friend4);
-                PieceImagePair.Add(-3, Properties.Resources.enemy3); PieceImagePair.Add(3, Properties.Resources.friend3);
-                PieceImagePair.Add(-2, Properties.Resources.enemy2); PieceImagePair.Add(2, Properties.Resources.friend2);
-                PieceImagePair.Add(-1, Properties.Resources.enemy1); PieceImagePair.Add(1, Properties.Resources.friend1);
+                PieceImagePair.Add(-7, Properties.Resources.enemy7);
+                PieceImagePair.Add(7, Properties.Resources.friend7);
+                PieceImagePair.Add(-6, Properties.Resources.enemy6);
+                PieceImagePair.Add(6, Properties.Resources.friend6);
+                PieceImagePair.Add(-5, Properties.Resources.enemy5);
+                PieceImagePair.Add(5, Properties.Resources.friend5);
+                PieceImagePair.Add(-4, Properties.Resources.enemy4);
+                PieceImagePair.Add(4, Properties.Resources.friend4);
+                PieceImagePair.Add(-3, Properties.Resources.enemy3);
+                PieceImagePair.Add(3, Properties.Resources.friend3);
+                PieceImagePair.Add(-2, Properties.Resources.enemy2);
+                PieceImagePair.Add(2, Properties.Resources.friend2);
+                PieceImagePair.Add(-1, Properties.Resources.enemy1);
+                PieceImagePair.Add(1, Properties.Resources.friend1);
                 PieceImagePair.Add(0, null);
-                PieceImagePair.Add(10, Properties.Resources.green); PieceImagePair.Add(-10, Properties.Resources.red);
+                PieceImagePair.Add(10, Properties.Resources.green);
+                PieceImagePair.Add(-10, Properties.Resources.red);
 
                 //动态数组申请空间
                 LastStep = new int[6];
@@ -106,7 +103,7 @@ namespace ChineseChess
             foreach (Control control in this.panelChessman.Controls)
             {
                 ChessPiece pictureBox = (ChessPiece)control;
-                pictureBox.Image = PieceImagePair[gameController.GetChessman(index / ColSum, index % ColSum)];
+                pictureBox.Image = PieceImagePair[gameController.GetChessman(index / GameController.Columns, index % GameController.Columns)];
                 index++;
             }
         }
@@ -121,9 +118,9 @@ namespace ChineseChess
             //移动
             SetLastStep(lasti, lastj, i, j, gameController.GetChessman(lasti, lastj), gameController.GetChessman(i, j));
             gameController.SetChessman(lasti, lastj, i, j);
-            PictureBox pictureBox = (PictureBox)this.panelChessman.Controls[i * ColSum + j];
+            PictureBox pictureBox = (PictureBox)this.panelChessman.Controls[i * GameController.Columns + j];
             pictureBox.Image = PieceImagePair[gameController.GetChessman(i, j)];
-            PictureBox oldPictureBox = (PictureBox)this.panelChessman.Controls[lasti * ColSum + lastj];
+            PictureBox oldPictureBox = (PictureBox)this.panelChessman.Controls[lasti * GameController.Columns + lastj];
             oldPictureBox.Image = PieceImagePair[0];
             if (gameWillOver)
             {
@@ -141,14 +138,14 @@ namespace ChineseChess
         //更新棋盘
         private void UpdateChessPanel()
         {
-            for (int i = 0; i < RowSum; ++i)
-                for (int j = 0; j < ColSum; ++j)
+            for (int i = 0; i < GameController.Rows; ++i)
+                for (int j = 0; j < GameController.Columns; ++j)
                     if (gameController.GetMoveHelper(i, j) == 1)
-                        ((ChessPiece)this.panelChessman.Controls[i * ColSum + j]).BackgroundImage = PieceImagePair[-10];
+                        ((ChessPiece)this.panelChessman.Controls[i * GameController.Columns + j]).BackgroundImage = PieceImagePair[-10];
                     else if (gameController.GetMoveHelper(i, j) == -1)
-                        ((ChessPiece)this.panelChessman.Controls[i * ColSum + j]).BackgroundImage = PieceImagePair[0];
+                        ((ChessPiece)this.panelChessman.Controls[i * GameController.Columns + j]).BackgroundImage = PieceImagePair[0];
                     else if (gameController.GetMoveHelper(i, j) == 2)
-                        ((PictureBox)this.panelChessman.Controls[i * ColSum + j]).BackgroundImage = PieceImagePair[10];
+                        ((PictureBox)this.panelChessman.Controls[i * GameController.Columns + j]).BackgroundImage = PieceImagePair[10];
         }
 
         //记录上一步的信息
@@ -178,9 +175,9 @@ namespace ChineseChess
             RemoveHelper();
             DisableFlickerTimer();
             gameController.ResetChessman(LastStep[0], LastStep[1], LastStep[2], LastStep[3], LastStep[4], LastStep[5]);
-            PictureBox pictureBox = (PictureBox)this.panelChessman.Controls[LastStep[2] * ColSum + LastStep[3]];
+            PictureBox pictureBox = (PictureBox)this.panelChessman.Controls[LastStep[2] * GameController.Columns + LastStep[3]];
             pictureBox.Image = PieceImagePair[LastStep[5]];
-            PictureBox oldPictureBox = (PictureBox)this.panelChessman.Controls[LastStep[0] * ColSum + LastStep[1]];
+            PictureBox oldPictureBox = (PictureBox)this.panelChessman.Controls[LastStep[0] * GameController.Columns + LastStep[1]];
             oldPictureBox.Image = PieceImagePair[LastStep[4]];
             SetLastStep(-1, -1, -1, -1, -1, -1);
         }
@@ -211,7 +208,7 @@ namespace ChineseChess
                         break;
                     index++;
                 }
-                if (gameController.IsAvaliable(index / ColSum, index % ColSum) == false)
+                if (gameController.IsAvaliable(index / GameController.Columns, index % GameController.Columns) == false)
                 {
                     this.Cursor = Cursors.No;
                 }
@@ -239,7 +236,7 @@ namespace ChineseChess
                 /*if ((gameController.GetChessman(lastIndex / ColSum, lastIndex % ColSum) < 0 && gameController.GetChessman(thisIndex / ColSum, thisIndex % ColSum) < 0)
                  || (gameController.GetChessman(lastIndex / ColSum, lastIndex % ColSum) > 0 && gameController.GetChessman(thisIndex / ColSum, thisIndex % ColSum) > 0)
                  || true == gameController.CanMove(lastIndex / ColSum, lastIndex % ColSum, thisIndex / ColSum, thisIndex % ColSum))*/
-                if (gameController.GetMoveHelper(thisIndex / ColSum, thisIndex % ColSum) != 0)
+                if (gameController.GetMoveHelper(thisIndex / GameController.Columns, thisIndex % GameController.Columns) != 0)
                     this.Cursor = Cursors.Hand;
                 else
                     this.Cursor = Cursors.No;
@@ -269,9 +266,9 @@ namespace ChineseChess
                         break;
                     index++;
                 }
-                if (gameController.IsAvaliable(index / ColSum, index % ColSum))
+                if (gameController.IsAvaliable(index / GameController.Columns, index % GameController.Columns))
                 {
-                    SetHelper(index / ColSum, index % ColSum);
+                    SetHelper(index / GameController.Columns, index % GameController.Columns);
                     Selected = pictureBox;
                     flickerTimer.Enabled = true;
                 }
@@ -297,9 +294,9 @@ namespace ChineseChess
                 //尝试移动，如果可以移动，那么先改变再禁用；如果不可移动，那么先禁用再改变
                 //在移动之前移除提示框，防止被覆盖
                 RemoveHelper();
-                if (true == gameController.CanMove(lastIndex / ColSum, lastIndex % ColSum, thisIndex / ColSum, thisIndex % ColSum))
+                if (true == gameController.CanMove(lastIndex / GameController.Columns, lastIndex % GameController.Columns, thisIndex / GameController.Columns, thisIndex % GameController.Columns))
                 {
-                    this.ResetAChessman(lastIndex / ColSum, lastIndex % ColSum, thisIndex / ColSum, thisIndex % ColSum);
+                    this.ResetAChessman(lastIndex / GameController.Columns, lastIndex % GameController.Columns, thisIndex / GameController.Columns, thisIndex % GameController.Columns);
                     this.Cursor = Cursors.No;
                     Selected = pictureBox;
                     DisableFlickerTimer();
