@@ -13,15 +13,23 @@ namespace ChineseChess
 {
     public partial class MainForm : Form
     {
-        private GameController gameController;
-        private Dictionary<int, Image> chessmanImagePair;   //储存int-Image的对应
+        private GameController gameController { get; set; }
+
+        private Dictionary<int, Image> chessmanImagePair { get; set; }  //储存int-Image的对应
+
         private const int RowSum = 10;  //行总数
         private const int ColSum = 9;   //列总数
-        private int[] lastStep; //记录上一步的动作，用于撤销操作
-        private PictureBox currentChosenPictureBox = null;  //当前选中的棋子
-        private Image currentChosenImage = null;    //当前选中的棋子的图像，用于闪动效果的实现
-        private System.Timers.Timer flickerTimer;   //定时器，用于闪动效果的实现
-        private int[][] moveHelper; //用于储存当前选定的棋子可接触、攻击、移动到的新位置状态
+
+        private int[] lastStep { get; set; } //记录上一步的动作，用于撤销操作
+
+        private PictureBox currentChosenPictureBox { get; set; }  //当前选中的棋子
+
+        private Image currentChosenImage { get; set; }   //当前选中的棋子的图像，用于闪动效果的实现
+
+        private System.Timers.Timer flickerTimer { get; set; }  //定时器，用于闪动效果的实现
+
+        private int[][] moveHelper { get; set; } //用于储存当前选定的棋子可接触、攻击、移动到的新位置状态
+
 
         public MainForm()
         {
@@ -29,6 +37,8 @@ namespace ChineseChess
             this.MaximizeBox = false;
             this.skipToolStripMenuItem.Enabled = false;
             this.undoToolStripMenuItem.Enabled = false;
+            gameController = new GameController();
+            flickerTimer = new System.Timers.Timer();
         }
 
         //右键菜单-新游戏
@@ -37,8 +47,6 @@ namespace ChineseChess
             //新游戏的初始化操作
             if (this.panelChessman.Controls.Count == 0)
             {
-                gameController = new GameController();
-
                 //如果没有生成过棋盘PictureBox，那么生成10 * 9个
                 for (int j = 0; j < RowSum; ++j)
                 {
@@ -47,9 +55,13 @@ namespace ChineseChess
                         PictureBox pictureBox = new PictureBox();
                         pictureBox.Size = new Size(70, 70);
                         if (j < 5)
-                            pictureBox.Location = new Point(i * 83, 10 + j * 83);
+                        {
+                            pictureBox.Location = new Point(i * 83, 10 + (j * 83));
+                        }
                         else if (j >= 5)
-                            pictureBox.Location = new Point(i * 83, 15 + j * 83);
+                        {
+                            pictureBox.Location = new Point(i * 83, 15 + (j * 83));
+                        }
                         pictureBox.Parent = panelChessman;
                         pictureBox.BackColor = Color.Transparent;
                         pictureBox.Click += new EventHandler(ClickChessEvent);
@@ -59,7 +71,7 @@ namespace ChineseChess
                     }
                 }
 
-                flickerTimer = new System.Timers.Timer();
+               
                 flickerTimer.Elapsed += new ElapsedEventHandler(TimerPictureBoxFlicker);
                 flickerTimer.Interval = 500;
                 flickerTimer.AutoReset = true;
@@ -74,7 +86,7 @@ namespace ChineseChess
                 chessmanImagePair.Add(-2, Properties.Resources.enemy2); chessmanImagePair.Add(2, Properties.Resources.friend2);
                 chessmanImagePair.Add(-1, Properties.Resources.enemy1); chessmanImagePair.Add(1, Properties.Resources.friend1);
                 chessmanImagePair.Add(0, null);
-                chessmanImagePair.Add(10, Properties.Resources.green);  chessmanImagePair.Add(-10, Properties.Resources.red);
+                chessmanImagePair.Add(10, Properties.Resources.green); chessmanImagePair.Add(-10, Properties.Resources.red);
 
                 //动态数组申请空间
                 lastStep = new int[6];
@@ -134,9 +146,9 @@ namespace ChineseChess
         //更新棋盘
         private void UpdateChessPanel()
         {
-            for(int i = 0; i < RowSum; ++i)
-                for(int j = 0; j < ColSum; ++j)
-                    if(gameController.GetMoveHelper(i, j) == 1)
+            for (int i = 0; i < RowSum; ++i)
+                for (int j = 0; j < ColSum; ++j)
+                    if (gameController.GetMoveHelper(i, j) == 1)
                         ((PictureBox)this.panelChessman.Controls[i * ColSum + j]).BackgroundImage = chessmanImagePair[-10];
                     else if (gameController.GetMoveHelper(i, j) == -1)
                         ((PictureBox)this.panelChessman.Controls[i * ColSum + j]).BackgroundImage = chessmanImagePair[0];
@@ -190,12 +202,12 @@ namespace ChineseChess
             //获取当前的PictureBox
             PictureBox pictureBox = (PictureBox)sender;
             //当前没有选中且该点为空
-            if(currentChosenPictureBox == null && pictureBox.Image == null)
+            if (currentChosenPictureBox == null && pictureBox.Image == null)
             {
                 this.Cursor = Cursors.No;
             }
             //当前没有选中
-            else if(currentChosenPictureBox == null)
+            else if (currentChosenPictureBox == null)
             {
                 int index = 0;
                 foreach (Control control in this.panelChessman.Controls)
@@ -232,7 +244,7 @@ namespace ChineseChess
                 /*if ((gameController.GetChessman(lastIndex / ColSum, lastIndex % ColSum) < 0 && gameController.GetChessman(thisIndex / ColSum, thisIndex % ColSum) < 0)
                  || (gameController.GetChessman(lastIndex / ColSum, lastIndex % ColSum) > 0 && gameController.GetChessman(thisIndex / ColSum, thisIndex % ColSum) > 0)
                  || true == gameController.CanMove(lastIndex / ColSum, lastIndex % ColSum, thisIndex / ColSum, thisIndex % ColSum))*/
-                if(gameController.GetMoveHelper(thisIndex / ColSum, thisIndex % ColSum) != 0)
+                if (gameController.GetMoveHelper(thisIndex / ColSum, thisIndex % ColSum) != 0)
                     this.Cursor = Cursors.Hand;
                 else
                     this.Cursor = Cursors.No;
@@ -322,7 +334,7 @@ namespace ChineseChess
         //禁用闪动定时器，没有选取的棋子或是选取的棋子已经完成了本次移动
         private void DisableFlickerTimer()
         {
-            if(currentChosenImage != null)
+            if (currentChosenImage != null)
                 currentChosenPictureBox.Image = currentChosenImage;
             flickerTimer.Enabled = false;
             currentChosenImage = null;
