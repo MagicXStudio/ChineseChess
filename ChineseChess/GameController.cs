@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChineseChess
 {
-    class GameController
+    public class GameController
     {
         private const int RowSum = 10;  //行总数
         private const int ColSum = 9;   //列总数
@@ -33,26 +29,42 @@ namespace ChineseChess
         public void Reset()
         {
             //初始化棋盘
-            for(int i = 0; i < chessMan.Length; ++i)
-                for(int j = 0; j < chessMan[i].Length; ++j)
+            for (int i = 0; i < chessMan.Length; ++i)
+                for (int j = 0; j < chessMan[i].Length; ++j)
                     switch (i * chessMan[i].Length + j)
                     {
-                        case 0:  chessMan[i][j] = -6; break;  case 89: chessMan[i][j] = 6; break;
-                        case 1:  chessMan[i][j] = -7; break;  case 88: chessMan[i][j] = 7; break;
-                        case 2:  chessMan[i][j] = -5; break;  case 87: chessMan[i][j] = 5; break;
-                        case 3:  chessMan[i][j] = -3; break;  case 86: chessMan[i][j] = 3; break;
-                        case 4:  chessMan[i][j] = -1; break;  case 85: chessMan[i][j] = 1; break;
-                        case 5:  chessMan[i][j] = -3; break;  case 84: chessMan[i][j] = 3; break;
-                        case 6:  chessMan[i][j] = -5; break;  case 83: chessMan[i][j] = 5; break;
-                        case 7:  chessMan[i][j] = -7; break;  case 82: chessMan[i][j] = 7; break;
-                        case 8:  chessMan[i][j] = -6; break;  case 81: chessMan[i][j] = 6; break;
-                        case 25: chessMan[i][j] = -4; break;  case 70: chessMan[i][j] = 4; break;
-                        case 19: chessMan[i][j] = -4; break;  case 64: chessMan[i][j] = 4; break;
-                        case 27: chessMan[i][j] = -2; break;  case 62: chessMan[i][j] = 2; break;
-                        case 29: chessMan[i][j] = -2; break;  case 60: chessMan[i][j] = 2; break;
-                        case 31: chessMan[i][j] = -2; break;  case 58: chessMan[i][j] = 2; break;
-                        case 33: chessMan[i][j] = -2; break;  case 56: chessMan[i][j] = 2; break;
-                        case 35: chessMan[i][j] = -2; break;  case 54: chessMan[i][j] = 2; break;
+                        case 0: chessMan[i][j] = -6; break;
+                        case 89: chessMan[i][j] = 6; break;
+                        case 1: chessMan[i][j] = -7; break;
+                        case 88: chessMan[i][j] = 7; break;
+                        case 2: chessMan[i][j] = -5; break;
+                        case 87: chessMan[i][j] = 5; break;
+                        case 3: chessMan[i][j] = -3; break;
+                        case 86: chessMan[i][j] = 3; break;
+                        case 4: chessMan[i][j] = -1; break;
+                        case 85: chessMan[i][j] = 1; break;
+                        case 5: chessMan[i][j] = -3; break;
+                        case 84: chessMan[i][j] = 3; break;
+                        case 6: chessMan[i][j] = -5; break;
+                        case 83: chessMan[i][j] = 5; break;
+                        case 7: chessMan[i][j] = -7; break;
+                        case 82: chessMan[i][j] = 7; break;
+                        case 8: chessMan[i][j] = -6; break;
+                        case 81: chessMan[i][j] = 6; break;
+                        case 25: chessMan[i][j] = -4; break;
+                        case 70: chessMan[i][j] = 4; break;
+                        case 19: chessMan[i][j] = -4; break;
+                        case 64: chessMan[i][j] = 4; break;
+                        case 27: chessMan[i][j] = -2; break;
+                        case 62: chessMan[i][j] = 2; break;
+                        case 29: chessMan[i][j] = -2; break;
+                        case 60: chessMan[i][j] = 2; break;
+                        case 31: chessMan[i][j] = -2; break;
+                        case 58: chessMan[i][j] = 2; break;
+                        case 33: chessMan[i][j] = -2; break;
+                        case 56: chessMan[i][j] = 2; break;
+                        case 35: chessMan[i][j] = -2; break;
+                        case 54: chessMan[i][j] = 2; break;
                         default: chessMan[i][j] = 0; break;
                     }
             //初始化先手和可选棋表
@@ -81,9 +93,9 @@ namespace ChineseChess
         //设置可移动状态，己方棋子及自身=3，可选敌方棋子=1，可选空位=2，不可选棋子0
         public void SetMoveHelper(int i, int j)
         {
-            for(int a = 0; a < RowSum; ++a)
+            for (int a = 0; a < RowSum; ++a)
             {
-                for(int b = 0; b < ColSum; ++b)
+                for (int b = 0; b < ColSum; ++b)
                 {
                     if (i == -1 && j == -1)
                     {
@@ -108,7 +120,7 @@ namespace ChineseChess
         //游戏结束判断
         public bool IsGameOver(int i, int j)
         {
-            if(Math.Abs(chessMan[i][j]) == 1)
+            if (Math.Abs(chessMan[i][j]) == 1)
                 return true;
             return false;
         }
@@ -129,7 +141,7 @@ namespace ChineseChess
             if (i != oldi && j != oldj)
                 return -1;
             int count = 0;
-            if(i == oldi)
+            if (i == oldi)
             {
                 int maxer = Math.Max(oldj, j);
                 int miner = Math.Min(oldj, j);
@@ -137,7 +149,7 @@ namespace ChineseChess
                     if (chessMan[i][loop] != 0)
                         count++;
             }
-            else if(j == oldj)
+            else if (j == oldj)
             {
                 int maxer = Math.Max(oldi, i);
                 int miner = Math.Min(oldi, i);
@@ -255,7 +267,7 @@ namespace ChineseChess
                         if (i < oldi && j < oldj && chessMan[oldi - 1][oldj] == 0)
                             return true;
                     }
-                    else if(Math.Abs(j - oldj) == 2)
+                    else if (Math.Abs(j - oldj) == 2)
                     {
                         if (i > oldi && j > oldj && chessMan[oldi][oldj + 1] == 0)
                             return true;
@@ -307,6 +319,6 @@ namespace ChineseChess
                         avalChess[i][j] = true;
                     else avalChess[i][j] = false;
         }
-        
+
     }
 }
